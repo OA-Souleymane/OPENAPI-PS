@@ -1,0 +1,21 @@
+{{>licenseInfo}}
+package {{package}};
+
+{{#imports}} 
+import {{import}};
+{{/imports}}
+
+public class {{classname}}PubsubCallback {
+
+    public {{classname}}PubsubCallback() {}
+    
+    {{#operations}}
+    {{#operation}}
+    {{#isSubscribe}}
+    public void {{operationId}}{{#allParams}}Callback({{{dataType}}} {{paramName}}{{/allParams}}) {
+        // Not implemented  
+    }
+    {{/isSubscribe}}
+    {{/operation}}
+    {{/operations}}
+}

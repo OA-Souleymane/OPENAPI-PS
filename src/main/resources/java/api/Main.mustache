@@ -1,0 +1,19 @@
+{{>licenseInfo}}
+
+package {{package}};
+
+public class Main {
+
+	public static void main(String[] args) throws Exception {
+
+		{{classname}} m{{classname}} = new {{classname}}();
+	
+		{{#operations}}
+		{{#operation}}
+		{{#isSubscribe}}
+		m{{classname}}.{{operationId}}();
+		{{/isSubscribe}}
+	    {{/operation}}
+        {{/operations}}	
+	}
+}

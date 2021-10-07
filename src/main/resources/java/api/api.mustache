@@ -1,0 +1,76 @@
+{{>licenseInfo}}
+
+package {{package}};
+
+{{#imports}}
+import {{import}};
+{{/imports}}
+
+{{^fullJavaUtil}}
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.StandardCharsets;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DeliverCallback;
+{{/fullJavaUtil}}
+
+public class {{classname}} {
+    
+    private List<String> globalServers = new ArrayList<String>({{#servers}}{{#-first}}Arrays.asList({{/-first}}"{{{url}}}"{{^-last}}, {{/-last}}){{/servers}});
+    
+    public {{classname}}() {}
+    
+    {{#operations}}
+    {{#operation}}
+    // QOS: {{qos}}
+    {{#isSubscribe}}
+    public void {{operationId}}() throws IOException, TimeoutException {
+        List<String> servers = new ArrayList<String>({{#servers}}{{#-first}}Arrays.asList({{/-first}}"{{{url}}}"{{^-last}}, {{/-last}}){{/servers}});
+        String broker = "";
+        if (!servers.isEmpty()) {
+            broker = servers.get(0);
+        } else {
+            broker = globalServers.get(0);
+        }
+        String queue = "{{path}}";
+		ConnectionFactory factory = new ConnectionFactory();
+		factory.setHost(broker);
+		Connection connexion = factory.newConnection();
+		Channel canal = connexion.createChannel();
+		canal.queueDeclare(queue , false, false, false, null);
+        DeliverCallback broker1 = (consumerTag, delivery) -> {
+		    String message = new String(delivery.getBody(), "UTF-8");
+            {{#allParams}}
+            ObjectMapper objectMapper = new ObjectMapper();
+            {{dataType}} {{paramName}} = objectMapper.readValue(message, {{dataType}}.class);
+			new {{classname}}PubsubCallback().{{operationId}}Callback({{paramName}});
+            {{/allParams}}
+	    };
+	    canal.basicConsume(queue , true, broker1, consumerTag -> { });
+    }
+    {{/isSubscribe}}
+    {{^isSubscribe}}
+    public void {{operationId}}({{#allParams}}{{{dataType}}} {{paramName}}{{/allParams}}) throws IOException, TimeoutException {
+        List<String> servers = new ArrayList<String>({{#servers}}{{#-first}}Arrays.asList({{/-first}}"{{{url}}}"{{^-last}}, {{/-last}}){{/servers}});
+        String broker = "";
+        if (!servers.isEmpty()) {
+            broker = servers.get(0);
+        } else {
+            broker = globalServers.get(0);
+        }
+        String queue = "{{path}}";
+		ConnectionFactory factory = new ConnectionFactory();
+		factory.setHost(broker);
+		Connection connexion = factory.newConnection();
+		Channel canal = connexion.createChannel();
+		canal.queueDeclare(queue , false, false, false, null);
+        canal.basicPublish("", queue , null, {{#allParams}}{{paramName}}{{/allParams}}.toString().getBytes(StandardCharsets.UTF_8)); 
+    }
+    {{/isSubscribe}} 
+    {{/operation}}
+    {{/operations}}
+}
