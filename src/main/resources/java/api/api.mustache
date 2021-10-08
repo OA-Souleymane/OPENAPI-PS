@@ -28,7 +28,7 @@ public class {{classname}} {
     {{#operation}}
     // QOS: {{qos}}
     {{#isSubscribe}}
-    public void {{operationId}}() throws IOException, TimeoutException {
+    public void {{operationId}}() throws Exception {
         List<String> servers = new ArrayList<String>({{#servers}}{{#-first}}Arrays.asList({{/-first}}"{{{url}}}"{{^-last}}, {{/-last}}){{/servers}});
         String broker = "";
         if (!servers.isEmpty()) {
@@ -54,7 +54,7 @@ public class {{classname}} {
     }
     {{/isSubscribe}}
     {{^isSubscribe}}
-    public void {{operationId}}({{#allParams}}{{{dataType}}} {{paramName}}{{/allParams}}) throws IOException, TimeoutException {
+    public void {{operationId}}({{#allParams}}{{{dataType}}} {{paramName}}{{/allParams}}) throws Exception {
         List<String> servers = new ArrayList<String>({{#servers}}{{#-first}}Arrays.asList({{/-first}}"{{{url}}}"{{^-last}}, {{/-last}}){{/servers}});
         String broker = "";
         if (!servers.isEmpty()) {

@@ -1,5 +1,5 @@
 
-  {{>model/additionalEnumTypeAnnotations}}public enum {{{datatypeWithEnum}}} {
+  {{>model/additionalEnumTypeAnnotations}}public class {{{datatypeWithEnum}}} {
     {{#allowableValues}}{{#enumVars}}{{{name}}}({{{value}}}){{^-last}},
     {{/-last}}{{#-last}};{{/-last}}{{/enumVars}}{{/allowableValues}}
 
